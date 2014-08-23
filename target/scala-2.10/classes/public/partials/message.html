@@ -1,9 +1,0 @@
-<div>
-    <h1 class="ui header">{{ message.subject }}</h1>
-    From: <a ng-href="mailto:{{ message.from }}" class="ui teal label">{{ message.from }}</a>
-    <pre ng-if="message.message.type.indexOf('text/plain') > -1" ng-bind="message.message.body | fromBase64"></pre>
-    <div ng-if="message.message.type.indexOf('text/html')  > -1" ng-bind-html="message.message.body | fromBase64"></div>
-    <div class="ui divider"></div>
-    <div class="ui basic button">Save</div>
-    <div ng-click="deleteMessage()" class="ui basic button">Delete</div>
-</div>
