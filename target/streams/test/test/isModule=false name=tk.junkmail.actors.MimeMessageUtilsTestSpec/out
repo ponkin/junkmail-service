@@ -1,0 +1,15 @@
+[0m[[0minfo[0m] [0mMimeMessageUtilsTestSpec[37m[0m[0m
+[0m[[0minfo[0m] [0m[37m[0m[37m[0m[0m
+[0m[[0minfo[0m] [0m[37m[0m[37mThe MimeUtils should[0m[37m[0m[0m
+[0m[[0minfo[0m] [0m[37m[0m[32m+[0m get charset from content-type filed[37m[0m[0m
+[0m[[0minfo[0m] [0m[37m[0m[32m+[0m get mime type from content-type filed[37m[0m[0m
+[0m[[0minfo[0m] [0m[37m[0m[37m[33mx[0m get body from mime message[0m[0m
+[0m[[31merror[0m] [0m   '{"type":"text/plain; charset=UTF-8","body":"0J3RiSENCg=="}' is not equal to '0J3RiSENCg==' (MimeMessageUtilsTestSpec.scala:29)[0m
+[0m[[31merror[0m] [0mExpected: 0J3RiSENCg==[0m
+[0m[[31merror[0m] [0mActual:   {"type":"text/plain; charset=UTF-8","body":"0J3RiSENCg=="}[0m
+[0m[[0minfo[0m] [0m[37m[0m[0m
+[0m[[0minfo[0m] [0m[37m[0m[32m+[0m get name from content-type[37m[0m[0m
+[0m[[0minfo[0m] [0m[37m[0m[37m[0m[0m
+[0m[[0minfo[0m] [0m[37m[0mTotal for specification MimeMessageUtilsTestSpec[0m
+[0m[[0minfo[0m] [0m[34mFinished in 109 ms[0m[0m
+[0m[[0minfo[0m] [0m[34m[0m[34m4 examples, 1 failure, 0 error[0m[0m
