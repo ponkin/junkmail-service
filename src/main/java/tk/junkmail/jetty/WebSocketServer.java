@@ -34,7 +34,6 @@ public class WebSocketServer {
 
     public void start() throws Exception {
         server.start();
-        server.join();
     }
 
     public void stop() throws Exception {

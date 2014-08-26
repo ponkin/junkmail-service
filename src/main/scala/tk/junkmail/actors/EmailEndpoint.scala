@@ -21,7 +21,7 @@ class EmailEndpoint(val dispatcher:ActorRef) extends Actor with ActorLogging{
 class SocketActor(val dispatcher:ActorRef) extends Actor with ActorLogging{
   override def receive = {
     case Tcp.Received(data) =>
-      dispatcher ! MessageDispatcher.Email(data.takeWhile( _ != '\n').dropRight(1), data.dropWhile( _ != '\n').drop(1))
+      dispatcher ! MessageDispatcher.Email(data.takeWhile( _ != '\n'), data.dropWhile( _ != '\n').drop(1))
     case Tcp.PeerClosed => stop()
     case Tcp.ErrorClosed => stop()
     case Tcp.Closed => stop()

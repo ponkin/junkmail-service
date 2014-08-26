@@ -17,11 +17,9 @@ object JunkmailSystem extends App with MainActors with AbstractSystem{
   implicit def system = ActorSystem("junkmail-service")
 
   private val js = new WebSocketServer(Configuration.portWs, JunkmailWebsocketHandler(dispatcher))
-  js.start()
   sys.addShutdownHook({system.shutdown;js.stop})
-
+  js.start()
   IO(Tcp) ! Tcp.Bind(emailEndpoint, new InetSocketAddress(Configuration.host, Configuration.portTcp))
-
 }
 
 object Configuration {

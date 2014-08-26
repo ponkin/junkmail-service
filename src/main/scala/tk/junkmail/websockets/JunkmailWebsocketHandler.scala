@@ -39,6 +39,7 @@ trait JunkmailWebsocketHandler {
       case Some((_id, email, createdAt)) => dispatcher ! MessageDispatcher.Subscribe(email, session)
       case None => generateEmail { newEmail =>
           sessionService.create(id, newEmail)
+          LOG.debug("Create session id={}, email={},", Array(id, newEmail))
           dispatcher ! MessageDispatcher.Subscribe(newEmail, session)
       }
     }
@@ -48,6 +49,7 @@ trait JunkmailWebsocketHandler {
     LOG.error("Web socket close with reason={} and code={}", reason, statusCode)
     sessionService.find(id) match {
       case Some((_id, email, createdAt)) =>
+        LOG.debug("Delete session id={}, email={}, date={}", _id, email, createdAt)
         dispatcher ! MessageDispatcher.Unsubscribe(email)
         sessionService.delete(id)
       case None => LOG.error("No session found for id={}", id)
@@ -59,10 +61,9 @@ trait JunkmailWebsocketHandler {
       Try(f(RandomStringUtils.randomAlphanumeric(length)+"@junkmail.tk")) match {
         case Success(v) => v
         case Failure(e) if length < 9 => generateEmail(f, length + 1)
-        case Failure(e) => {
+        case Failure(e) =>
           LOG.error("can not generate email due to {}", e)
           throw e
-        }
       }
     }
   }

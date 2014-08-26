@@ -25,6 +25,8 @@ class MessageDispatcher extends Actor with ActorLogging{
   override def receive = {
     case Unsubscribe(id) => context.actorSelection(id) ! Mailbox.Stop
     case Subscribe(id, session) => context.actorOf(Mailbox.props(id, session), id) ! Mailbox.SendInit
-    case Email(to, data) => context.actorSelection(to.utf8String) ! Mailbox.SendEmail(data)
+    case Email(to, data) =>
+      log.debug("Received data for={}", to.utf8String)
+      context.actorSelection(to.utf8String) ! Mailbox.SendEmail(data)
   }
 }
