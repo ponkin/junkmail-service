@@ -1,7 +1,8 @@
 package tk.junkmail.actors
 
-import akka.actor.{ActorRef, Props, Actor, ActorLogging}
-import akka.io.Tcp
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import akka.io.Tcp._
+import akka.util.ByteString
 
 /**
  * @author  Alexey Ponkin
@@ -12,23 +13,27 @@ object EmailEndpoint{
 }
 class EmailEndpoint(val dispatcher:ActorRef) extends Actor with ActorLogging{
   override def receive = {
-    case Tcp.CommandFailed(_: Tcp.Bind) => context stop self
-    case Tcp.Connected(remote, local) =>
-      sender ! Tcp.Register(context.actorOf(Props(classOf[SocketActor], dispatcher)))
+    case b @ Bound(localAddress) => log.debug("Bound to local address")
+    case CommandFailed(_: Bind) => context stop self
+    case c @ Connected(remote, local) =>
+      sender ! Register(context.actorOf(Props(classOf[SocketActor], dispatcher)), keepOpenOnPeerClosed = true)
   }
 }
 
 class SocketActor(val dispatcher:ActorRef) extends Actor with ActorLogging{
+
+  val buffer = ByteString.newBuilder
+
   override def receive = {
-    case Tcp.Received(data) =>
-      dispatcher ! MessageDispatcher.Email(data.takeWhile( _ != '\n'), data.dropWhile( _ != '\n').drop(1))
-    case Tcp.PeerClosed => stop()
-    case Tcp.ErrorClosed => stop()
-    case Tcp.Closed => stop()
-    case Tcp.ConfirmedClosed => stop()
-    case Tcp.Aborted => stop()
+
+    case Received(data) =>
+      log.debug("Data length={}", data.length)
+      buffer.append(data)
+    case PeerClosed     =>
+      val message = buffer.result()
+      dispatcher ! MessageDispatcher.Email(message.takeWhile( _ != '\n'), message.dropWhile( _ != '\n').drop(1))
+      context stop self
   }
-  private def stop() {
-    context stop self
-  }
+
+
 }

@@ -1,13 +1,10 @@
 package tk.junkmail
 
 import java.io.InputStream
-import javax.mail.Multipart
-import javax.mail.internet.{MimeBodyPart, MimeMultipart, MimePart, MimeMessage}
+import javax.mail.internet.{MimeBodyPart, MimeMessage, MimeMultipart}
 
 import org.apache.commons.codec.binary.Base64
-import spray.json._
-
-import spray.json.DefaultJsonProtocol
+import spray.json.{DefaultJsonProtocol, _}
 
 /**
  * @author  Alexey Ponkin
@@ -32,7 +29,7 @@ package object model {
 
   object ModelStringProtocol {
 
-    import ModelJsonProtocol._
+    import tk.junkmail.model.ModelJsonProtocol._
 
     implicit def InitMailbox2String(value : InitMailbox) = value.toJson.compactPrint
 
