@@ -25,11 +25,18 @@ public class JunkmailWebSocketAdapter extends WebSocketAdapter {
 
     @Override
     public void onWebSocketConnect(Session sess) {
+        super.onWebSocketConnect(sess);
         handler.onWebSocketConnect(id, sess);
     }
 
     @Override
     public void onWebSocketClose(int statusCode, String reason) {
+        super.onWebSocketClose(statusCode, reason);
         handler.onWebSocketClose(id, statusCode, reason);
+    }
+
+    @Override
+    public void onWebSocketText(String message) {
+        handler.onWebSocketText(id, message, getSession());
     }
 }

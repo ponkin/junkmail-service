@@ -2,8 +2,8 @@ package tk.junkmail.actors
 
 import java.nio.ByteBuffer
 import java.util.Properties
-import javax.mail.internet.MimeMessage
-import javax.mail.{Address, Session => JMSession}
+import javax.mail.internet.{InternetAddress, MimeMessage}
+import javax.mail.{ Session => JMSession }
 
 import akka.actor.{Actor, ActorLogging, Props}
 import akka.util.ByteString
@@ -40,14 +40,6 @@ import scala.concurrent.duration._
     case SendEmail(data) =>
       log.debug("Send email length={}", data.length)
       val message = new MimeMessage(s, data.iterator.asInputStream)
-      val from = message.getFrom match {
-        case a:Array[Address] => a.headOption match{
-          case Some(email) => email.toString
-          case None => "unknown@unknown"
-        }
-        case _ => "unknown@unknown"
-
-      }
       val email_body = body(message) match {
         case Some(text) => text
         case None => PlainEmail("", "")
@@ -55,7 +47,7 @@ import scala.concurrent.duration._
 
       val attachments = fetchAttachments(message)
 
-      session.getRemote.sendStringByFuture(Envelope(from, message.getSubject, message.getSentDate.getTime, email_body, attachments))
+      session.getRemote.sendStringByFuture(Envelope(InternetAddress.toString(message.getFrom), message.getSubject, message.getSentDate.getTime, email_body, attachments))
 
     case SendInit => Try(session.getRemote) match {
       case Success(remote) => remote.sendStringByFuture(InitMailbox(emailAddress))
@@ -68,7 +60,6 @@ import scala.concurrent.duration._
     case Stop =>
       log.debug("Stopping mailbox={}", emailAddress)
       pinger.cancel()
-      session.close()
       context stop self
   }
 }

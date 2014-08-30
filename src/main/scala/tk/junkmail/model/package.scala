@@ -1,7 +1,6 @@
 package tk.junkmail
 
 import java.io.InputStream
-import java.sql.Date
 import javax.mail.internet.{MimeBodyPart, MimeMessage, MimeMultipart}
 
 import org.apache.commons.codec.binary.Base64
@@ -27,6 +26,8 @@ package object model {
     implicit val attachmentFormat = jsonFormat3(Attachment)
     
     implicit val envelopeFormat = jsonFormat5(Envelope)
+
+    implicit val userCommandFormat = jsonFormat2(UserCommand)
 
   }
 

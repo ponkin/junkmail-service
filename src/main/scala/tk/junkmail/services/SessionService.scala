@@ -43,6 +43,11 @@ trait SessionService {
     q.update(DateTime.now + 1.day)
   }
 
+  def updateEmail(id:String, email:String) = {
+    val q = for { s <- sessions if s.id === id } yield (s.email, s.expiredAt)
+    q.update(email, DateTime.now + 1.day)
+  }
+
   def deleteExpiredSessions(maxAge:DateTime=DateTime.now) = sessions.filter(_.expiredAt < maxAge).delete
 
 }
