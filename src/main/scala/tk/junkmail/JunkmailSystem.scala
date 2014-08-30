@@ -2,10 +2,11 @@ package tk.junkmail
 
 import java.net.InetSocketAddress
 
-import akka.actor.{Props, ActorSystem}
+import akka.actor.ActorSystem
 import akka.io.{Tcp, IO}
+import tk.junkmail.actors.SessionCleaner
 import tk.junkmail.jetty.WebSocketServer
-import tk.junkmail.services.{AbstractSystem, MainActors}
+import tk.junkmail.services.{SessionService, AbstractSystem, MainActors}
 import tk.junkmail.websockets.JunkmailWebsocketHandler
 
 /**
@@ -14,11 +15,21 @@ import tk.junkmail.websockets.JunkmailWebsocketHandler
  */
 object JunkmailSystem extends App with MainActors with AbstractSystem{
 
+
+
   implicit def system = ActorSystem("junkmail-service")
 
-  private val js = new WebSocketServer(Configuration.portWs, JunkmailWebsocketHandler(dispatcher))
-  sys.addShutdownHook({system.shutdown;js.stop})
+  private val sessionService = SessionService()
+  private val js = new WebSocketServer(Configuration.portWs, JunkmailWebsocketHandler(dispatcher, sessionService))
+  sys.addShutdownHook({system.shutdown();js.stop()})
   js.start()
+
+  import scala.concurrent.duration._
+  implicit val executor = system.dispatcher
+
+  val sessionCleaner = system.actorOf(SessionCleaner.props(sessionService))
+  system.scheduler.schedule(12 hours, 1 day, sessionCleaner, SessionCleaner.Clean) // clean expired sessions
+
   IO(Tcp) ! Tcp.Bind(emailEndpoint, new InetSocketAddress(Configuration.host, Configuration.portTcp))
 }
 

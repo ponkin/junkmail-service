@@ -1,10 +1,13 @@
 package tk.junkmail
 
 import java.io.InputStream
+import java.sql.Date
 import javax.mail.internet.{MimeBodyPart, MimeMessage, MimeMultipart}
 
 import org.apache.commons.codec.binary.Base64
 import spray.json.{DefaultJsonProtocol, _}
+
+import com.github.nscala_time.time.Imports._
 
 /**
  * @author  Alexey Ponkin
@@ -38,6 +41,7 @@ package object model {
     implicit def Envelope2String(value:Envelope) = value.toJson.compactPrint
 
   }
+
 
   def body(message:MimeMessage) = {
         message.getContent match {

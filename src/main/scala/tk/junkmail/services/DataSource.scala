@@ -7,5 +7,5 @@ import scala.slick.driver.H2Driver.simple._
  * @version 1, 24 Aug 2014
  */
 trait DataSource {
-  implicit def db: Database
+  implicit def session: Session
 }

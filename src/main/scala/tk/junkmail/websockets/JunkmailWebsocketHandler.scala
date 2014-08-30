@@ -14,13 +14,11 @@ import scala.util.{Failure, Success, Try}
  * @version 1, 24 Aug 2014
  */
 object JunkmailWebsocketHandler{
-   def apply(disp: ActorRef) = new JunkmailWebsocketHandler {
+   def apply(disp: ActorRef, sess:SessionService) = new JunkmailWebsocketHandler {
 
-     val sess = SessionService()
+     override def sessionService = sess
 
-     override implicit def sessionService = sess
-
-     override implicit def dispatcher = disp
+     override def dispatcher = disp
    }
 }
 
@@ -28,15 +26,17 @@ trait JunkmailWebsocketHandler {
 
   final val LOG = LoggerFactory.getLogger(classOf[JunkmailWebsocketHandler])
 
-  implicit def sessionService: SessionService
+  def sessionService: SessionService
 
-  implicit def dispatcher: ActorRef
+  def dispatcher: ActorRef
 
   def onWebSocketError(id:String, cause: Throwable) = LOG.error("Web Socket Error {}", cause)
 
   def onWebSocketConnect(id:String, session: Session) = {
     sessionService.find(id) match {
-      case Some((_id, email, createdAt)) => dispatcher ! MessageDispatcher.Subscribe(email, session)
+      case Some((_id, email, createdAt, expiredAt)) =>
+        sessionService.prolongSession(_id)
+        dispatcher ! MessageDispatcher.Subscribe(email, session)
       case None => generateEmail { newEmail =>
           sessionService.create(id, newEmail)
           LOG.debug("Create session id={}, email={},", Array(id, newEmail))
@@ -48,17 +48,16 @@ trait JunkmailWebsocketHandler {
   def onWebSocketClose(id:String, statusCode: Int, reason: String) = {
     LOG.error("Web socket close with reason={} and code={}", reason, statusCode)
     sessionService.find(id) match {
-      case Some((_id, email, createdAt)) =>
+      case Some((_id, email, createdAt, expiredAt)) =>
         LOG.debug("Delete session id={}, email={}, date={}", _id, email, createdAt)
         dispatcher ! MessageDispatcher.Unsubscribe(email)
-        sessionService.delete(id)
       case None => LOG.error("No session found for id={}", id)
     }
   }
 
   private def generateEmail[T](f: String => T, length:Int = 6):Unit = {
     if(length < 9) {
-      Try(f(RandomStringUtils.randomAlphanumeric(length)+"@junkmail.tk")) match {
+      Try(f(RandomStringUtils.randomAlphanumeric(length).toLowerCase+"@junkmail.tk")) match {
         case Success(v) => v
         case Failure(e) if length < 9 => generateEmail(f, length + 1)
         case Failure(e) =>

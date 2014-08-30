@@ -1,6 +1,6 @@
 package tk.junkmail.services
 
-import tk.junkmail.actors.{EmailEndpoint, MessageDispatcher}
+import tk.junkmail.actors.{SessionCleaner, EmailEndpoint, MessageDispatcher}
 
 /**
  * @author  Alexey Ponkin
@@ -11,5 +11,6 @@ trait MainActors {
 
   val dispatcher = system.actorOf(MessageDispatcher.props)
   val emailEndpoint = system.actorOf(EmailEndpoint.props(dispatcher))
+
 
 }
