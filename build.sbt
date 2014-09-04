@@ -1,8 +1,10 @@
 import com.typesafe.sbt.SbtNativePackager._
-
 import NativePackagerKeys._
-
 import com.typesafe.sbt.packager.archetypes.ServerLoader.{SystemV, Upstart}
+
+packageArchetype.java_server
+
+serverLoading in Debian := SystemV
 
 organization  := "junkmail.tk"
 
@@ -16,15 +18,11 @@ maintainer in Debian := "Alexey Ponkin <alexey.ponkin@gmail.com>"
 
 packageSummary in Debian := "junkmail.tk server"
 
-packageDescription in Debian := "Websocket server for junkmail.tk"
+packageDescription in Debian := " Websocket server for junkmail.tk "
 
 daemonUser in Linux := "junkmail" // user which will execute the application
 
-daemonGroup in Linux := daemonUser.value    // group which will execute the application
-
-packageArchetype.java_server
-
-serverLoading in Debian := SystemV
+daemonGroup in Linux := "junkmail"   // group which will execute the application
 
 bashScriptConfigLocation := Some("${app_home}/../conf/jvmopts")
 
