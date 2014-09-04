@@ -18,6 +18,8 @@ packageSummary in Linux := "junkmail.tk server"
 
 packageDescription := "Websocket server for junkmail.tk"
 
+packageDescription in Linux := packageDescription.value
+
 daemonUser in Linux := "junkmail" // user which will execute the application
 
 daemonGroup in Linux := daemonUser.value    // group which will execute the application
