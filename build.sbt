@@ -28,6 +28,8 @@ bashScriptConfigLocation := Some("${app_home}/../conf/jvmopts")
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 
+javaOptions in run := Seq("-Xms128m", "-Xmx512m")
+
 resolvers ++= Seq(
   "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
   "Spray repository" at "http://repo.spray.io/",
