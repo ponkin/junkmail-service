@@ -41,7 +41,7 @@ trait JunkmailWebsocketHandler {
         dispatcher ! MessageDispatcher.Subscribe(email, session)
       case None => generateEmail { newEmail =>
           sessionService.create(id, newEmail)
-          LOG.debug("Create session id={}, email={},", Array(id, newEmail))
+          LOG.debug("Create session id={}, email={},", id, newEmail)
           dispatcher ! MessageDispatcher.Subscribe(newEmail, session)
       }
     }
@@ -51,7 +51,6 @@ trait JunkmailWebsocketHandler {
     LOG.error("Web socket close with reason={} and code={}", reason, statusCode)
     sessionService.find(id) match {
       case Some((_id, email, createdAt, expiredAt)) =>
-        LOG.debug("Delete session id={}, email={}, date={}", _id, email, createdAt)
         dispatcher ! MessageDispatcher.Unsubscribe(email)
       case None => LOG.error("No session found for id={}", id)
     }
@@ -69,7 +68,7 @@ trait JunkmailWebsocketHandler {
     sessionService.find(id) match {
       case Some((_id, email, createdAt, expiredAt)) =>
         generateEmail { newEmail =>
-          LOG.debug("Change email={} to new {} for id={}", newEmail, email, _id)
+          LOG.debug("Change email={} to new {} for id={}", email, newEmail, _id)
           sessionService.updateEmail(id, newEmail)
           dispatcher ! MessageDispatcher.Subscribe(newEmail, session)
           dispatcher ! MessageDispatcher.Unsubscribe(email)

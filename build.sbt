@@ -1,3 +1,9 @@
+import com.typesafe.sbt.SbtNativePackager._
+
+import NativePackagerKeys._
+
+import com.typesafe.sbt.packager.archetypes.ServerLoader.{SystemV, Upstart}
+
 organization  := "junkmail.tk"
 
 name          := "junkmail-service"
@@ -5,6 +11,22 @@ name          := "junkmail-service"
 version       := "0.5"
 
 scalaVersion  := "2.10.4"
+
+maintainer in Linux := "Alexey Ponkin <alexey.ponkin@gmail.com>"
+
+packageSummary in Linux := "junkmail.tk server"
+
+packageDescription := "Websocket server for junkmail.tk"
+
+daemonUser in Linux := "junkmail" // user which will execute the application
+
+daemonGroup in Linux := daemonUser.value    // group which will execute the application
+
+packageArchetype.java_server
+
+serverLoading in Debian := SystemV
+
+bashScriptConfigLocation := Some("${app_home}/../conf/jvmopts")
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 
@@ -19,7 +41,6 @@ libraryDependencies ++= {
   val akkaV = "2.3.5"
   val sprayV = "1.3.1"
   Seq(
-    //  "org.java-websocket"  %   "Java-WebSocket" % "1.3.1",
     "com.typesafe.slick" %% "slick" % "2.1.0",
     "joda-time" % "joda-time" % "2.4",
     "org.joda" % "joda-convert" % "1.6",
