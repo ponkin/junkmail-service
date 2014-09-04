@@ -12,13 +12,11 @@ version       := "0.5"
 
 scalaVersion  := "2.10.4"
 
-maintainer in Linux := "Alexey Ponkin <alexey.ponkin@gmail.com>"
+maintainer in Debian := "Alexey Ponkin <alexey.ponkin@gmail.com>"
 
-packageSummary in Linux := "junkmail.tk server"
+packageSummary in Debian := "junkmail.tk server"
 
-packageDescription := "Websocket server for junkmail.tk"
-
-packageDescription in Linux := packageDescription.value
+packageDescription in Debian := "Websocket server for junkmail.tk"
 
 daemonUser in Linux := "junkmail" // user which will execute the application
 
